@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import joblib
 import pandas as pd
 import numpy as np
 
 app = Flask(__name__)
+CORS(app)
 
 # Load model and feature columns
 model = joblib.load("model/churn_model.pkl")
@@ -13,38 +15,38 @@ def prepare_input(data):
     """
     Convert user input JSON into model-ready dataframe
     """
-    # Start with all-zero row
+   
     input_df = pd.DataFrame(
         np.zeros((1, len(feature_columns))),
         columns=feature_columns
     )
 
-    # Numeric features
+   
     input_df["tenure"] = data["tenure"]
     input_df["MonthlyCharges"] = data["monthlyCharges"]
     input_df["TotalCharges"] = data["totalCharges"]
 
-    # Contract
+    
     if data["contract"] == "One year":
         input_df["Contract_One year"] = 1
     elif data["contract"] == "Two year":
         input_df["Contract_Two year"] = 1
 
-    # Internet Service
+   
     if data["internetService"] == "Fiber optic":
         input_df["InternetService_Fiber optic"] = 1
     elif data["internetService"] == "No":
         input_df["InternetService_No"] = 1
 
-    # Payment Method
+
     if data["paymentMethod"] == "Electronic check":
         input_df["PaymentMethod_Electronic check"] = 1
 
-    # Online Security
+
     if data["onlineSecurity"] == "Yes":
         input_df["OnlineSecurity_Yes"] = 1
 
-    # Paperless Billing
+
     if data["paperlessBilling"] == "Yes":
         input_df["PaperlessBilling_Yes"] = 1
 
